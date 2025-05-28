@@ -26,4 +26,5 @@ $routes->get('/comercializacion', 'Home::comercializacion');
 $routes->get('/inicio', 'Home::inicio');
 $routes->get('/contacto', 'Home::contacto');
 $routes->get('/terminos', 'Home::terminos');
+$routes->get('/catalogo', 'Home::catalogo');
 ?>

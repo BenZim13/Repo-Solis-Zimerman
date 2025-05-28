@@ -22,6 +22,8 @@
     <?= $contact ?? ''?>
     <?= $term ?? ''?>
     
+    <?= $content ?? '' ?> 
+
   <?= view('components/footer')?>
 
     <script src="<?= base_url('js/main.js') ?>"></script>
