@@ -2,8 +2,8 @@
     <div class="container-fluid d-flex align-content-start flex-wrap">
         <a class="navbar-brand" href="<?= base_url('/') ?>">SuperCarpi</a>
 
-        <form class="d-flex" role="search">
-            <input class="form-control" type="search" placeholder="Buscar Productos" aria-label="Search">
+        <form class="d-flex" role="search" action="<?= base_url('home/por_producto') ?>" method="get">
+            <input class="form-control" type="search" placeholder="Buscar por ID" aria-label="Search" name="id">
         </form>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">

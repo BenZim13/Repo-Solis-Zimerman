@@ -1,25 +1,50 @@
 <?php
 namespace App\Controllers;
+use App\Models\ProductosModel;
+
 
 class Home extends BaseController
 {
 
 
-    public function catalogo()
-    {
-        $db = \Config\Database::connect();
+public function catalogo()
+{
+    $productoModel = new ProductosModel();
+    $resultado = $productoModel->findAll();
 
-        $query = $db->query("SELECT id_producto, nombre, descripcion, precio, stock FROM producto");
-        $productos = $query->getResult();
+    $catal_html = view('catalogo/catalogo_vista', ['productos' => $resultado]);
 
-        $catal = view('catalogo/catalogo_vista', ['productos' => $productos]);
+    return view('templates/main_layout', [
+        'titulo' => 'Catalogo de productos',
+        'content_for_layout' => $catal_html // AHORA ES 'content_for_layout'
+    ]);
+}
 
+public function por_producto($id_segmento = null)
+{
+    $request = \Config\Services::request();
+    $id_get = $request->getGet('id');
+    $id = $id_segmento ?? $id_get;
 
-        return view('templates/main_layout', [
-            'titulo' => 'Catalogo de productos', // Puedes seguir usándolo en la etiqueta <title> si lo deseas
-            'content' => $catal // Pasa el HTML renderizado de la tabla al slot 'content'
+    if (empty($id)) {
+        return redirect()->to('/')->with('error', 'Por favor, ingrese un ID de producto para buscar.');
+    }
+
+    $productoModel = new ProductosModel();
+    $producto = $productoModel->find($id);
+
+    if (!$producto) {
+        return view("templates/main_layout", [
+            'titulo' => 'Producto no encontrado',
+            'content_for_layout' => '<h2>Producto no encontrado</h2><p>El producto con el ID ' . esc($id) . ' no existe.</p>' // AHORA ES 'content_for_layout'
         ]);
     }
+
+    return view("templates/main_layout", [
+        'titulo' => 'Producto en específico',
+        'content_for_layout' => view('pages/por_producto', ['producto' => $producto]) // AHORA ES 'content_for_layout'
+    ]);
+}
 
     public function cuerpo()
     {
