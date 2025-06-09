@@ -5,21 +5,24 @@ use CodeIgniter\Model;
 
 class ProductosModel extends Model
 {
-    /**  Tabla y PK  */
-    protected $table      = 'producto';
+    /** Tabla y PK  */
+    protected $table        = 'producto';
     protected $primaryKey = 'id_producto';
 
-    /**  Retorno  */
+    /** Retorno  */
     protected $returnType     = 'array';
     protected $useAutoIncrement = true;
 
-    /**  Soft-delete  */
+    /** Soft-delete  */
     protected $useSoftDeletes = true;
     protected $deletedField   = 'fecha_elimina';
 
-    /**  Campos que se pueden insertar / actualizar  */
+    /** Campos que se pueden insertar / actualizar  */
+    // Asegúrate de que 'id_producto' NO esté en allowedFields si es AUTO_INCREMENT
+    // Si 'id_producto' se auto-incrementa y se genera en la DB, no debe estar aquí.
+    // Solo si lo vas a proporcionar manualmente (lo cual es raro para PK).
     protected $allowedFields = [
-        'id_producto',
+        // 'id_producto', // Generalmente, la PK no se permite en `allowedFields` si es AUTO_INCREMENT
         'nombre',
         'descripcion',
         'precio',
@@ -27,28 +30,29 @@ class ProductosModel extends Model
         'image_url',
         'activo',
         'id_categoria',
-        'fecha_alta',
-        'fecha_modifica',
-        'fecha_elimina',   // imprescindible para soft-delete
+        // 'fecha_alta',    // Timestamps los maneja el modelo automáticamente
+        // 'fecha_modifica',// Timestamps los maneja el modelo automáticamente
+        // 'fecha_elimina', // Soft deletes los maneja el modelo automáticamente
     ];
 
-    /**  Timestamps  */
+    /** Timestamps  */
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'fecha_alta';
     protected $updatedField  = 'fecha_modifica';
 
     /* ---------------------------------------------------------------------- */
-    /*  Métodos propios                                                       */
+    /* Métodos propios                                                       */
     /* ---------------------------------------------------------------------- */
 
-    /**  Devuelve todos los productos activos con el nombre de su categoría */
+    /** Devuelve todos los productos activos con el nombre de su categoría */
     public function getProductosConCategoria(): array
     {
         return $this->select('producto.*, categoria.nombre AS nombre_categoria')
-                    ->join('categoria', 'categoria.id_categoria = producto.id_categoria')
-                    ->where('producto.fecha_elimina', null)
-                    ->findAll();
+                     ->join('categoria', 'categoria.id_categoria = producto.id_categoria')
+                     ->where('producto.fecha_elimina', null) // Solo productos NO eliminados
+                     ->where('producto.activo', 1) // Solo productos activos
+                     ->findAll();
     }
 
     /**
@@ -57,14 +61,29 @@ class ProductosModel extends Model
      */
     public function buscarProducto(string $valor): ?array
     {
+        $builder = $this->builder();
+        $builder->where('fecha_elimina', null); // Siempre buscamos productos no eliminados
+        $builder->where('activo', 1); // Siempre buscamos productos activos
+
         if (is_numeric($valor)) {
-            return $this->where('id_producto', (int) $valor)
-                        ->where('fecha_elimina', null)
-                        ->first();
+            $builder->where('id_producto', (int) $valor);
+            return $builder->get()->getRowArray();
         }
 
-        return $this->where('fecha_elimina', null)
-                    ->where('LOWER(nombre) LIKE', '%' . strtolower($valor) . '%')
-                    ->first();
+        // Si no es numérico, o si la búsqueda por ID no se realizó, buscar por nombre
+        $builder->where('LOWER(nombre) LIKE', '%' . strtolower(trim($valor)) . '%');
+        return $builder->get()->getRowArray();
+    }
+
+    /**
+     * Devuelve todos los productos (activos e inactivos, pero no eliminados) con el nombre de su categoría,
+     * útil para el listado de administración.
+     */
+    public function getAllAdminProductsConCategoria(): array
+    {
+        return $this->select('producto.*, categoria.nombre AS nombre_categoria')
+                    ->join('categoria', 'categoria.id_categoria = producto.id_categoria')
+                    ->where('producto.fecha_elimina', null) // NO mostrar productos soft-deleted
+                    ->findAll();
     }
 }

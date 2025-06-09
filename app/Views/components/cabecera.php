@@ -46,6 +46,18 @@
                         </ul>
                     </li>
 
+
+                    <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAdmin" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Administración
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdmin">
+        <li><a class="dropdown-item" href="<?= base_url('productos/listar') ?>">Gestión de Productos</a></li>
+        <li><a class="dropdown-item" href="<?= base_url('productos/agregar') ?>">Agregar Producto</a></li>
+    </ul>
+</li>
+
+
                     <li class="nav-item">
                         <a class="nav-link" href="<?= base_url('comercializacion') ?>">Comercialización</a>
                     </li>

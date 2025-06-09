@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use App\Models\ProductosModel;
 use App\Models\CategoriasModel;
+use CodeIgniter\HTTP\RedirectResponse;
 
 class Producto extends BaseController
 {
@@ -60,51 +61,166 @@ class Producto extends BaseController
             'titulo'          => $producto['nombre'],
             'categorias_menu' => $this->categoriaModel->getAllCategories(),
         ]);
-    }
+    }    /* ---------- Métodos de Administración de Productos ---------- */
 
-        public function agregar()
+    /**
+     * Muestra el formulario para agregar un nuevo producto.
+     */
+    public function agregar(): string
     {
-        $categoriasModel = new CategoriasModel();
-        $data['categorias'] = $categoriasModel->findAll();
-
+        $data = [
+            'titulo'     => 'Agregar Nuevo Producto',
+            'categorias' => $this->categoriaModel->getAllCategories(), // Necesitamos las categorías para el dropdown
+            'categorias_menu' => $this->categoriaModel->getAllCategories(), // Para el menú de la cabecera
+        ];
         return view('pages/agregar_producto', $data);
     }
 
-    public function guardar()
+    /**
+     * Guarda un nuevo producto en la base de datos.
+     */
+    public function guardar(): RedirectResponse
     {
-        $productoModel = new ProductosModel();
+        // Validar datos del formulario (¡IMPORTANTE!)
+        $rules = [
+            'nombre'       => 'required|min_length[3]|max_length[255]',
+            'descripcion'  => 'required',
+            'precio'       => 'required|numeric|greater_than[0]',
+            'stock'        => 'required|integer|greater_than_equal_to[0]',
+            'id_categoria' => 'required|integer',
+            'activo'       => 'required|in_list[0,1]', // 0 o 1
+            'image_url'    => 'permit_empty|valid_url_strict', // O 'uploaded[image_url]|max_size[image_url,1024]|is_image[image_url]' si es una carga de archivo
+        ];
+
+        if (!$this->validate($rules)) {
+            // Si la validación falla, recargar el formulario con los errores
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
 
         $data = [
             'nombre'        => $this->request->getPost('nombre'),
             'descripcion'   => $this->request->getPost('descripcion'),
             'precio'        => $this->request->getPost('precio'),
             'stock'         => $this->request->getPost('stock'),
-            'image_url'     => $this->request->getPost('image_url'),
+            'image_url'     => $this->request->getPost('image_url'), // Ajustar si es carga de archivo
             'activo'        => $this->request->getPost('activo'),
-            'id_categoria'  => $this->request->getPost('id_categoria')
+            'id_categoria'  => $this->request->getPost('id_categoria'),
         ];
 
-        $productoModel->save($data);
+        $this->productoModel->save($data); // save() maneja inserción y actualización
 
-        return redirect()->to('/productos/listar');
+        return redirect()->to(base_url('productos/listar'))->with('success', 'Producto agregado exitosamente.');
     }
 
-    public function eliminar($id)
+    /**
+     * Muestra el formulario para editar un producto existente.
+     * @param int $id ID del producto a editar.
+     */
+    public function editar(int $id): string|RedirectResponse
     {
-        $productoModel = new ProductosModel();
-        $productoModel->delete($id);
+        $producto = $this->productoModel->find($id);
 
-        return redirect()->to('/productos/listar');
+        if (!$producto) {
+            return redirect()->to(base_url('productos/listar'))->with('error', 'Producto no encontrado para editar.');
+        }
+
+        $data = [
+            'titulo'     => 'Editar Producto',
+            'producto'   => $producto,
+            'categorias' => $this->categoriaModel->getAllCategories(), // Necesitamos las categorías para el dropdown
+            'categorias_menu' => $this->categoriaModel->getAllCategories(), // Para el menú de la cabecera
+        ];
+        return view('pages/editar_producto', $data);
     }
 
-    public function listar()
+    /**
+     * Actualiza un producto existente en la base de datos.
+     * @param int $id ID del producto a actualizar (se pasa oculto en el formulario).
+     */
+    public function actualizar(): RedirectResponse
     {
-        $productoModel = new ProductosModel();
-        $data['productos'] = $productoModel
-            ->select('producto.*, categoria.nombre as nombre_categoria')
-            ->join('categoria', 'categoria.id_categoria = producto.id_categoria')
-            ->findAll();
+        $rules = [
+            'id_producto'  => 'required|integer|is_not_unique[producto.id_producto]', // Aseguramos que el ID existe
+            'nombre'       => 'required|min_length[3]|max_length[255]',
+            'descripcion'  => 'required',
+            'precio'       => 'required|numeric|greater_than[0]',
+            'stock'        => 'required|integer|greater_than_equal_to[0]',
+            'id_categoria' => 'required|integer',
+            'activo'       => 'required|in_list[0,1]',
+            'image_url'    => 'permit_empty|valid_url_strict',
+        ];
 
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $id_producto = $this->request->getPost('id_producto');
+
+        $data = [
+            'id_producto'   => $id_producto, // Necesario para que save() sepa que es una actualización
+            'nombre'        => $this->request->getPost('nombre'),
+            'descripcion'   => $this->request->getPost('descripcion'),
+            'precio'        => $this->request->getPost('precio'),
+            'stock'         => $this->request->getPost('stock'),
+            'image_url'     => $this->request->getPost('image_url'),
+            'activo'        => $this->request->getPost('activo'),
+            'id_categoria'  => $this->request->getPost('id_categoria'),
+        ];
+
+        $this->productoModel->save($data); // save() actualiza si el 'primaryKey' está presente
+
+        return redirect()->to(base_url('productos/listar'))->with('success', 'Producto actualizado exitosamente.');
+    }
+
+    /**
+     * Lista todos los productos para la administración.
+     */
+    public function listar(): string
+    {
+        $data = [
+            'titulo'          => 'Lista de Productos (Admin)',
+            'productos'       => $this->productoModel->getAllAdminProductsConCategoria(), // Nuevo método en el modelo
+            'categorias_menu' => $this->categoriaModel->getAllCategories(), // Para el menú de la cabecera
+        ];
         return view('pages/listar_productos', $data);
+    }
+
+ public function eliminar(int $id): RedirectResponse
+    {
+        $producto = $this->productoModel->find($id);
+
+        if (!$producto) {
+            return redirect()->to(base_url('productos/listar'))->with('error', 'Producto no encontrado para eliminar.');
+        }
+
+        $this->productoModel->delete($id);
+
+        return redirect()->to(base_url('productos/listar'))->with('success', 'Producto eliminado (ocultado) exitosamente.');
+    }
+
+    /**
+     * Elimina múltiples productos (soft delete) seleccionados desde la tabla.
+     */
+    public function eliminar_seleccionados(): RedirectResponse
+    {
+        $ids = $this->request->getPost('ids_eliminar'); // Obtener el array de IDs seleccionados
+
+        if (empty($ids) || !is_array($ids)) {
+            return redirect()->to(base_url('productos/listar'))->with('error', 'No se seleccionaron productos para eliminar.');
+        }
+
+        $productos_eliminados_count = 0;
+        foreach ($ids as $id) {
+            // Opcional: Podrías validar cada ID si existe antes de eliminar.
+            // Para simplificar, asumimos que los IDs vienen de la tabla.
+            $this->productoModel->delete((int)$id); // Asegurarse de que sea un entero
+            $productos_eliminados_count++;
+        }
+
+        if ($productos_eliminados_count > 0) {
+            return redirect()->to(base_url('productos/listar'))->with('success', $productos_eliminados_count . ' producto(s) eliminado(s) (ocultados) exitosamente.');
+        } else {
+            return redirect()->to(base_url('productos/listar'))->with('error', 'No se pudo eliminar ningún producto seleccionado.');
+        }
     }
 }
