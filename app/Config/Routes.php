@@ -10,21 +10,44 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes = Services::routes();
 
-// Cargar las rutas del sistema (NO BORRAR)
+// -----------------------------------------------------------------------------
+// Rutas del sistema (NO BORRAR)
 if (file_exists(SYSTEMPATH . 'Config/Routes.php')) {
     require SYSTEMPATH . 'Config/Routes.php';
 }
+// -----------------------------------------------------------------------------
 
-// Configuración predeterminada del enrutador
+// -----------------------------------------------------------------------------
+// Ajustes por defecto
+// -----------------------------------------------------------------------------
 $routes->setDefaultNamespace('App\Controllers');
-$routes->setDefaultController('Home'); // Controlador predefinido
-$routes->setDefaultMethod('index'); //Metodo predefinido
 
-$routes->get('/', 'Home::cuerpo');
-$routes->get('/quienessomos', 'Home::quienessomos'); 
-$routes->get('/comercializacion', 'Home::comercializacion');
-$routes->get('/inicio', 'Home::inicio');
-$routes->get('/contacto', 'Home::contacto');
-$routes->get('/terminos', 'Home::terminos');
-$routes->get('/catalogo', 'Home::catalogo');
-$routes->get('home/por_producto', 'Home::por_producto');?>
+// -----------------------------------------------------------------------------
+// Páginas estáticas
+// -----------------------------------------------------------------------------
+$routes->get('/',              'Home::cuerpo');
+$routes->get('quienessomos',   'Home::quienessomos');
+$routes->get('comercializacion','Home::comercializacion');
+$routes->get('inicio',         'Home::inicio');
+$routes->get('contacto',       'Home::contacto');
+$routes->get('terminos',       'Home::terminos');
+
+// -----------------------------------------------------------------------------
+// Catálogo y productos
+// -----------------------------------------------------------------------------
+$routes->group('catalogo', static function (RouteCollection $routes) {
+    $routes->get('/',                 'Producto::catalogo');                // /catalogo
+    $routes->get('categoria/(:num)',  'Producto::catalogoPorCategoria/$1'); // /catalogo/categoria/5
+});
+
+/*
+ |------------------------------------------------------------------------
+ | Detalle de producto unificado
+ |------------------------------------------------------------------------
+ |  Acepta:
+ |   • /producto/123          (ID numérico)
+ |   • /producto/Costilla%20Swift  (Nombre)
+ |   • /producto/costilla swift    (el nombre no distingue mayúsculas)
+/* --- Detalle / búsqueda de producto --- */
+$routes->get('producto/buscar', 'Producto::por_producto'); // formulario GET
+$routes->get('producto/(:any)', 'Producto::por_producto/$1'); // /producto/123  o  /producto/nombre

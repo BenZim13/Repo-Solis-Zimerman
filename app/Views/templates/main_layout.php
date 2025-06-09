@@ -23,7 +23,8 @@
     <?= $term ?? ''?>
     
 
-<?= $content_for_layout ?? '' ?>
+    <?= $this->renderSection('content_for_layout') ?>
+
 
   <?= view('components/footer')?>
 
