@@ -223,4 +223,23 @@ class Producto extends BaseController
             return redirect()->to(base_url('productos/listar'))->with('error', 'No se pudo eliminar ningún producto seleccionado.');
         }
     }
+
+public function catalogoPorCategoria(int $id_categoria)
+{
+    $productos = $this->productoModel
+                      ->where('id_categoria', $id_categoria)
+                      ->where('activo', 1)
+                      ->findAll();
+
+    $categoria = $this->categoriaModel->find($id_categoria);
+    $nombre_categoria = $categoria['nombre'] ?? 'Categoría desconocida';
+
+    return view('pages/catalogo_vista', [
+        'productos'       => $productos,
+        'titulo'          => 'Productos en: ' . $nombre_categoria,
+        'categorias_menu' => $this->categoriaModel->getAllCategories(),
+    ]);
+}
+
+
 }

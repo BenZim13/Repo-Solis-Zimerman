@@ -35,7 +35,7 @@
                             <?php if (isset($categorias_menu) && !empty($categorias_menu)): ?>
                                 <?php foreach ($categorias_menu as $categoria): ?>
                                     <li>
-                                        <a class="dropdown-item" href="<?= base_url('catalogo/categoria/' . esc($categoria['id_categoria'])) ?>">
+<a class="dropdown-item" href="<?= base_url('catalogo/categoria/' . esc($categoria['id_categoria'])) ?>">
                                             <?= esc($categoria['nombre']) ?>
                                         </a>
                                     </li>
