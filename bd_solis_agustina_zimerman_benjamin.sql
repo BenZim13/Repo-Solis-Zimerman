@@ -115,3 +115,35 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+--
+-- Estructura de tabla para la tabla `users`
+--
+CREATE TABLE `users` (
+  `id_usuario` INT(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(30) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `email` varchar(200) NOT NULL,
+  `nombre` varchar(50) NOT NULL,
+  `apellido` varchar(50) NOT NULL,
+  `dni` varchar(10) not NULL,
+  `direccion` varchar(250) NOT NULL,
+  `tipo` tinyint(1) NOT NULL DEFAULT 1,
+  `activo` tinyint(1) NOT NULL DEFAULT 1,
+  `fecha_alta` datetime NOT NULL DEFAULT current_timestamp(),
+  `fecha_mod` datetime NOT NULL DEFAULT current_timestamp(),
+  `fecha_baja` datetime DEFAULT NULL, current_timestamp()
+
+  -- Indices de la tabla `users`
+  PRIMARY KEY (`id_usuario`), 
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `users` ADD COLUMN `role` VARCHAR(50) DEFAULT 'cliente' AFTER `email`;
+
+
+--Insertar un usuario de prueba--
+INSERT INTO `users` (`username`, `password`, `email`) VALUES
+('testuser', '$2y$10$hRzQ0NlD6Wz7mK2x5Jj.e.n2g3V4i5o6p7q8r9s0', 'test@example.com');
+-- La contraseña de 'testuser' en este ejemplo es 'password123' hasheada.
+
