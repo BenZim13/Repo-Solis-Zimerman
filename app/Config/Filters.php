@@ -12,6 +12,9 @@ use CodeIgniter\Filters\InvalidChars;
 use CodeIgniter\Filters\PageCache;
 use CodeIgniter\Filters\PerformanceMetrics;
 use CodeIgniter\Filters\SecureHeaders;
+// Importa tus filtros personalizados
+use App\Filters\AuthFilter; // Asegúrate de que esta línea esté presente
+use App\Filters\AdminFilter; // Asegúrate de que esta línea esté presente
 
 class Filters extends BaseFilters
 {
@@ -34,6 +37,8 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
+        'auth'          => AuthFilter::class,   // <-- ¡AGREGADO! Alias para tu filtro de autenticación
+        'admin'         => AdminFilter::class,  // <-- ¡AGREGADO! Alias para tu filtro de administrador
     ];
 
     /**
@@ -69,13 +74,13 @@ class Filters extends BaseFilters
      */
     public array $globals = [
         'before' => [
-            // 'honeypot',
-            // 'csrf',
-            // 'invalidchars',
+            // 'honeypot', // Puedes descomentar si quieres usarlo globalmente
+            'csrf',     // <-- ¡DESCOMENTADO! Importante para proteger todos los formularios POST
+            // 'invalidchars', // Puedes descomentar si quieres usarlo globalmente
         ],
         'after' => [
-            // 'honeypot',
-            // 'secureheaders',
+            // 'honeypot',     // Puedes descomentar si quieres usarlo globalmente
+            // 'secureheaders', // Puedes descomentar si quieres usarlo globalmente
         ],
     ];
 

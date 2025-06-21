@@ -25,14 +25,14 @@ abstract class BaseController extends Controller
      *
      * @var array
      */
-    protected $helpers = ['form']; // <--- ¡Asegúrate de que 'form' esté aquí!
+    protected $helpers = ['form', 'url']; // Mejorado: Agregado 'url' para funciones como base_url() si se usan en vistas o controladores.
 
     /**
      * Instance of the Session service.
      *
      * @var \CodeIgniter\Session\Session
      */
-    protected $session; // Agregué el tipo de hint para claridad
+    protected $session;
 
     /**
      * Constructor.
@@ -45,6 +45,6 @@ abstract class BaseController extends Controller
         // Preload any models, libraries, etc, here.
 
         // E.g.: $this->session = \Config\Services::session();
-        $this->session = \Config\Services::session();
+        $this->session = \Config\Services::session(); // Inicialización de la sesión aquí para que esté disponible en todos los controladores hijos.
     }
 }

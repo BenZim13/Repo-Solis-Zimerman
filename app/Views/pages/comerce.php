@@ -1,3 +1,5 @@
+<?= $this->extend('templates/main_layout') ?>
+<?= $this->section('content_for_layout') ?>
 <section id ="Como_comprar"class = "container-fluid">
     <div id ="titulo_como_comprar"   class="container-lg text-center">
         <div id="titulo" class = "text-center">
@@ -158,3 +160,4 @@
         </div>
     </div>
 </section>
+<?= $this->endSection() ?>

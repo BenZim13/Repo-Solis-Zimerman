@@ -1,0 +1,57 @@
+<?= $this->extend('templates/main_layout') ?>
+<?= $this->section('content_for_layout') ?>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-dark text-white text-center">
+                    <h2 class="mb-0"><?= $titulo ?? 'Registrarse' ?></h2>
+                </div>
+                <div class="card-body">
+                    <?php if (session()->getFlashdata('exito')): ?>
+                        <div class="alert alert-success"><?= session()->getFlashdata('exito') ?></div>
+                    <?php endif; ?>
+                    <?php if (session()->getFlashdata('error')): ?>
+                        <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
+                    <?php endif; ?>
+                    <?php if (isset($errores)): ?>
+                        <div class="alert alert-danger">
+                            <ul>
+                                <?php foreach ($errores as $error): ?>
+                                    <li><?= esc($error) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
+
+                    <form action="<?= base_url('registrarse') ?>" method="post">
+                        <?= csrf_field() ?>
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" value="<?= old('nombre') ?>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="<?= old('email') ?>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contraseña" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="contraseña" name="contraseña" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmar_contraseña" class="form-label">Confirmar Contraseña</label>
+                            <input type="password" class="form-control" id="confirmar_contraseña" name="confirmar_contraseña" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Registrarse</button>
+                        </div>
+                    </form>
+                    <p class="text-center mt-3">
+                        ¿Ya tienes una cuenta? <a href="<?= base_url('ingresar') ?>">Ingresa aquí</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?= $this->endSection() ?>

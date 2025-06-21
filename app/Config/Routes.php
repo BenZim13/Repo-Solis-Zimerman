@@ -28,7 +28,6 @@ $routes->setDefaultNamespace('App\Controllers');
 $routes->get('/',              'Home::cuerpo');
 $routes->get('quienessomos',   'Home::quienessomos');
 $routes->get('comercializacion','Home::comercializacion');
-$routes->get('inicio',         'Home::inicio');
 $routes->get('contacto',       'Home::contacto');
 $routes->get('terminos',       'Home::terminos');
 
@@ -36,34 +35,75 @@ $routes->get('terminos',       'Home::terminos');
 // Catálogo y productos (públicos)
 // -----------------------------------------------------------------------------
 $routes->group('catalogo', static function (RouteCollection $routes) {
-    $routes->get('/',              'Producto::catalogo');               // /catalogo
-    $routes->get('categoria/(:num)', 'Producto::catalogoPorCategoria/$1'); // /catalogo/categoria/5 (si tienes este método)
+    $routes->get('/',              'Producto::catalogo');
+    $routes->get('categoria/(:num)', 'Producto::catalogoPorCategoria/$1');
 });
 
 /* --- Detalle / búsqueda de producto (público) --- */
-$routes->get('producto/buscar', 'Producto::por_producto');   // Para el formulario GET en la cabecera
-$routes->get('producto/(:any)', 'Producto::por_producto/$1'); // Para /producto/123 o /producto/nombre
+$routes->get('producto/buscar', 'Producto::por_producto');
+$routes->get('producto/(:any)', 'Producto::por_producto/$1');
 
 // -----------------------------------------------------------------------------
-// Rutas de Administración de Productos (¡NUEVAS!)
+// Rutas del Carrito de Compras
 // -----------------------------------------------------------------------------
-$routes->group('productos', static function (RouteCollection $routes) {
-    $routes->get('listar',       'Producto::listar');       // GET /productos/listar -> Muestra la lista de productos
-    $routes->get('agregar',      'Producto::agregar');      // GET /productos/agregar -> Muestra el formulario para agregar
-    $routes->post('guardar',     'Producto::guardar');      // POST /productos/guardar -> Procesa el formulario de agregar/editar
-    $routes->get('editar/(:num)', 'Producto::editar/$1');    // GET /productos/editar/ID -> Muestra el formulario de edición
-    $routes->post('actualizar',  'Producto::actualizar');   // POST /productos/actualizar -> Procesa la actualización (usa el mismo método guardar o uno separado)
-    $routes->get('eliminar/(:num)', 'Producto::eliminar/$1'); // GET /productos/eliminar/ID -> Elimina (soft delete) un producto
-        $routes->post('eliminar_seleccionados', 'Producto::eliminar_seleccionados'); // POST /productos/eliminar_seleccionados
-
+$routes->group('carrito', static function (RouteCollection $routes) {
+    $routes->get('/',          'CarritoController::index');
+    $routes->post('agregar',    'CarritoController::agregar');
+    $routes->post('actualizar', 'CarritoController::actualizar');
+    $routes->post('eliminar',   'CarritoController::eliminar');
+    $routes->post('vaciar',     'CarritoController::vaciar');
 });
 
-// Nota: Las rutas de POST para 'guardar' y 'actualizar' podrían unificarse si tu formulario
-// siempre envía el 'id_producto' (para actualizar) o no lo envía (para agregar).
-// Por simplicidad y claridad, las he separado aquí.
+// -----------------------------------------------------------------------------
+// Rutas de Autenticación (Registro, Login, Logout, Perfil) con nombres en español
+// -----------------------------------------------------------------------------
+$routes->group('/', static function($routes) {
+    // Rutas para mostrar el formulario de registro y procesarlo
+    $routes->get('registrarse', 'Autenticacion::registrar', ['as' => 'registrarse']);
+    $routes->post('registrarse', 'Autenticacion::intentarRegistro');
+
+    // Rutas para mostrar el formulario de login y procesarlo
+    $routes->get('ingresar', 'Autenticacion::ingresar', ['as' => 'ingresar']);
+    $routes->post('ingresar', 'Autenticacion::intentarIngreso');
+
+    // Ruta para cerrar sesión
+    $routes->get('salir', 'Autenticacion::cerrarSesion', ['as' => 'salir']);
+
+    // Ruta para el perfil del usuario (protegida por el filtro 'auth')
+    $routes->get('mi-perfil', 'Autenticacion::perfil', ['filter' => 'auth', 'as' => 'mi_perfil']);
+
+    // Rutas de administración (protegidas por el filtro 'admin')
+    $routes->group('administracion', ['filter' => 'admin'], function($routes) {
+        $routes->get('panel', 'Administracion::panel', ['as' => 'panel_administracion']);
+        $routes->get('usuarios', 'Administracion::usuarios', ['as' => 'gestion_usuarios']);
+        // Puedes añadir más rutas específicas de la administración aquí, usando el controlador Administracion
+    });
+});
+
 
 // -----------------------------------------------------------------------------
-// Finalización de rutas (NO BORRAR)
+// Rutas de Administración de Productos (protegidas por filtro 'admin')
+// Nota: Como ya se usa 'admin' como filtro, estas rutas también estarán protegidas.
+// Si quieres que solo sean accesibles para administradores, deja el filtro 'admin'.
+// Si necesitas un acceso menos restrictivo, podrías cambiarlo a 'auth' o quitar el filtro.
+// He puesto el filtro 'admin' aquí también para consistencia con las otras rutas de admin.
+// Idealmente, todas las rutas de admin deberían estar dentro del grupo 'administracion'.
+// Por ahora, las dejo aquí pero con el filtro explícito.
 // -----------------------------------------------------------------------------
-$routes->get('/(:any)', 'Home::error404'); // Catch-all for undefined routes
-$routes->setAutoRoute(false); // Asegúrate de que esto esté en 'false' en producción
+$routes->group('productos', static function (RouteCollection $routes) {
+    $routes->get('listar',         'Producto::listar', ['filter' => 'admin']);
+    $routes->get('agregar',        'Producto::agregar', ['filter' => 'admin']);
+    $routes->post('guardar',        'Producto::guardar', ['filter' => 'admin']);
+    $routes->get('editar/(:num)',   'Producto::editar/$1', ['filter' => 'admin']);
+    $routes->post('actualizar',     'Producto::actualizar', ['filter' => 'admin']);
+    $routes->get('eliminar/(:num)', 'Producto::eliminar/$1', ['filter' => 'admin']);
+    $routes->post('eliminar_seleccionados', 'Producto::eliminar_seleccionados', ['filter' => 'admin']);
+});
+$routes->post('administracion/usuarios/eliminar/(:num)', 'Administracion::eliminar/$1');
+// También puedes usar una ruta sin el ID si siempre lo pasas por POST
+// $routes->post('administracion/usuarios/eliminar', 'Administracion::eliminar');
+
+// Catch-all para rutas no definidas. Asegúrate de que tu controlador 'Home' tenga el método 'error404'.
+$routes->get('/(:any)', 'Home::error404');
+
+$routes->setAutoRoute(false);
