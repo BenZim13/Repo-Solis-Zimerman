@@ -37,8 +37,9 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
-        'auth'          => AuthFilter::class,   // <-- ¡AGREGADO! Alias para tu filtro de autenticación
-        'admin'         => AdminFilter::class,  // <-- ¡AGREGADO! Alias para tu filtro de administrador
+        'auth'          => AuthFilter::class,    // <-- AÑADE/VERIFICA ESTA LÍNEA para el alias 'auth'
+        'authFilter'    => AuthFilter::class,    // <-- MANTENER SI LO SIGUES USANDO EN RUTAS ESPECÍFICAS
+        'admin'         => AdminFilter::class,
     ];
 
     /**
@@ -74,13 +75,13 @@ class Filters extends BaseFilters
      */
     public array $globals = [
         'before' => [
-            // 'honeypot', // Puedes descomentar si quieres usarlo globalmente
-            'csrf',     // <-- ¡DESCOMENTADO! Importante para proteger todos los formularios POST
-            // 'invalidchars', // Puedes descomentar si quieres usarlo globalmente
+            // 'honeypot',
+            'csrf',      // DESCOMENTADO
+            // 'invalidchars',
         ],
         'after' => [
-            // 'honeypot',     // Puedes descomentar si quieres usarlo globalmente
-            // 'secureheaders', // Puedes descomentar si quieres usarlo globalmente
+            // 'honeypot',
+            // 'secureheaders',
         ],
     ];
 

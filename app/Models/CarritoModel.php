@@ -1,77 +1,137 @@
 <?php namespace App\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\API\ResponseTrait;
 
 class CarritoModel extends Model
 {
-    protected $table        = 'carrito';
-    protected $primaryKey   = 'id_carrito';
+    protected $table          = 'carrito';
+    protected $primaryKey     = 'id_carrito';
     protected $useAutoIncrement = true;
     protected $returnType     = 'array';
-    protected $useSoftDeletes = false; // El carrito no se "elimina suavemente"
-protected $allowedFields  = ['id_usuario', 'id_producto', 'cantidad', 'fecha_agregado']; // ¡IMPORTANTE: Asegúrate que 'fecha_agregado' esté aquí!
-    protected $useTimestamps = true; // Para las columnas de fecha
+    protected $useSoftDeletes = false;
+
+    // Asegúrate de incluir 'id_carrito' en allowedFields para permitir actualizaciones
+    protected $allowedFields = ['id_carrito', 'id_usuario', 'id_producto', 'cantidad', 'fecha_agregado'];
+
+    protected $useTimestamps = true;
     protected $createdField  = 'fecha_agregado';
     protected $updatedField  = false; // No necesitamos un campo 'updated_at' para cada item del carrito
-    protected $deletedField  = false; // El soft delete ya está en false
+    protected $deletedField  = false;
 
-    // Método para obtener todos los ítems del carrito de un usuario, con detalles del producto
     public function getCarritoPorUsuario(int $idUsuario): array
     {
         return $this->select('carrito.*, producto.nombre AS nombre_producto, producto.precio AS precio_producto, producto.image_url')
-                     ->join('producto', 'producto.id_producto = carrito.id_producto')
-                     ->where('carrito.id_usuario', $idUsuario)
-                     ->findAll();
+                    ->join('producto', 'producto.id_producto = carrito.id_producto')
+                    ->where('carrito.id_usuario', $idUsuario)
+                    ->findAll();
     }
 
-    // Método para añadir un producto al carrito o actualizar su cantidad si ya existe
     public function agregarProducto(int $idUsuario, int $idProducto, int $cantidad = 1): bool
     {
-        // Verificar si el producto ya existe en el carrito del usuario
-        $existente = $this->where('id_usuario', $idUsuario)
-                          ->where('id_producto', $idProducto)
-                          ->first();
+        log_message('debug', '*** INICIO agregarProducto (Solución definitiva) ***');
+        log_message('debug', 'idUsuario: {idUsuario}, idProducto: {idProducto}, cantidad: {cantidad}', [
+            'idUsuario' => $idUsuario,
+            'idProducto' => $idProducto,
+            'cantidad' => $cantidad
+        ]);
 
-        if ($existente) {
-            // Si existe, actualizar la cantidad
-            // Asegura que la cantidad no sea negativa
-            $nuevaCantidad = $existente['cantidad'] + $cantidad;
-            if ($nuevaCantidad < 1) $nuevaCantidad = 1; // Evita cantidades negativas
-
-            // CORRECCIÓN: Pasa el array asociativo directamente al update del modelo
-            return $this->update($existente['id_carrito'], ['cantidad' => $nuevaCantidad]);
-        } else {
-            // Si no existe, insertar un nuevo registro
-            if ($cantidad < 1) $cantidad = 1; // Cantidad mínima al insertar
-
-            // 'fecha_agregado' se autocompleta si useTimestamps es true y está en $allowedFields
-            return $this->insert([
-                'id_usuario' => $idUsuario,
-                'id_producto' => $idProducto,
-                'cantidad' => $cantidad,
-            ]);
-        }
-    }
-
-    // Método para actualizar la cantidad de un producto específico en el carrito
-    public function actualizarCantidad(int $idCarrito, int $cantidad): bool
-    {
-        // Asegúrate de que la cantidad no sea menor a 1
         if ($cantidad < 1) {
             $cantidad = 1;
+            log_message('debug', 'Cantidad ajustada a 1.');
         }
-        return $this->update($idCarrito, ['cantidad' => $cantidad]);
+
+        $itemExistente = $this->where('id_usuario', $idUsuario)
+                              ->where('id_producto', $idProducto)
+                              ->first();
+
+        if ($itemExistente) {
+            log_message('debug', 'Producto existente encontrado: {itemExistente}', ['itemExistente' => json_encode($itemExistente)]);
+            $nuevaCantidad = $itemExistente['cantidad'] + $cantidad;
+            if ($nuevaCantidad < 1) {
+                $nuevaCantidad = 1;
+                log_message('debug', 'Nueva cantidad ajustada a 1 (negativa/cero).');
+            }
+
+            $dataToUpdate = [
+                'cantidad'   => $nuevaCantidad,
+                // No necesitamos 'fecha_agregado' aquí a menos que quieras actualizarla en cada cambio.
+                // Si tu DB tiene ON UPDATE CURRENT_TIMESTAMP para fecha_agregado, se actualizará sola.
+            ];
+
+            log_message('debug', 'Datos para ACTUALIZAR (Direct DB Query): {data}', ['data' => json_encode($dataToUpdate)]);
+            log_message('debug', 'Tipo de clave de cantidad en dataToUpdate: {type}', ['type' => gettype(key($dataToUpdate))]);
+            log_message('debug', 'Tipo de valor de cantidad en dataToUpdate: {type}', ['type' => gettype($dataToUpdate['cantidad'])]);
+
+            // CAMBIO CLAVE: Usar update directamente del Query Builder, no $this->save()
+            $result = $this->db->table($this->table)
+                               ->where('id_carrito', $itemExistente['id_carrito'])
+                               ->update($dataToUpdate);
+
+            log_message('debug', 'Resultado de update (Direct DB Query): {result}', ['result' => $result ? 'true' : 'false']);
+            return $result;
+        } else {
+            log_message('debug', 'Producto NO existente, insertando nuevo (Direct DB Query).');
+            $dataToInsert = [
+                'id_usuario'  => $idUsuario,
+                'id_producto' => $idProducto,
+                'cantidad'    => $cantidad,
+                'fecha_agregado' => date('Y-m-d H:i:s'), // Añadir la fecha explícitamente
+            ];
+
+            log_message('debug', 'Datos para INSERTAR (Direct DB Query): {data}', ['data' => json_encode($dataToInsert)]);
+            log_message('debug', 'Tipo de clave de id_usuario en dataToInsert: {type}', ['type' => gettype(key($dataToInsert))]);
+            log_message('debug', 'Tipo de valor de id_usuario en dataToInsert: {type}', ['type' => gettype($dataToInsert['id_usuario'])]);
+
+            // CAMBIO CLAVE: Usar insert directamente del Query Builder, no $this->save()
+            $result = $this->db->table($this->table)->insert($dataToInsert);
+
+            log_message('debug', 'Resultado de insert (Direct DB Query): {result}', ['result' => $result ? 'true' : 'false']);
+            return $result;
+        }
     }
 
-    // Método para eliminar un producto específico del carrito
+    public function actualizarCantidad(int $idCarrito, int $cantidad): bool
+    {
+        log_message('debug', '*** INICIO actualizarCantidad (Solución definitiva) ***');
+        log_message('debug', 'idCarrito: {idCarrito}, cantidad: {cantidad}', [
+            'idCarrito' => $idCarrito,
+            'cantidad' => $cantidad
+        ]);
+
+        if ($cantidad < 1) {
+            $cantidad = 1;
+            log_message('debug', 'Cantidad ajustada a 1.');
+        }
+
+        $dataToUpdate = [
+            'cantidad'   => $cantidad
+        ];
+
+        log_message('debug', 'Datos para ACTUALIZAR (Direct DB Query): {data}', ['data' => json_encode($dataToUpdate)]);
+        log_message('debug', 'Tipo de clave de cantidad en dataToUpdate: {type}', ['type' => gettype(key($dataToUpdate))]);
+        log_message('debug', 'Tipo de valor de cantidad en dataToUpdate: {type}', ['type' => gettype($dataToUpdate['cantidad'])]);
+
+        // CAMBIO CLAVE: Usar update directamente del Query Builder, no $this->save()
+        $result = $this->db->table($this->table)
+                           ->where('id_carrito', $idCarrito)
+                           ->update($dataToUpdate);
+
+        log_message('debug', 'Resultado de update (Direct DB Query - actualizarCantidad): {result}', ['result' => $result ? 'true' : 'false']);
+        return $result;
+    }
+
     public function eliminarProducto(int $idCarrito): bool
     {
+        log_message('debug', 'Eliminando producto del carrito: {idCarrito}', ['idCarrito' => $idCarrito]);
+        // Para delete, el método del modelo sigue siendo seguro, ya que no pasa por set()
         return $this->delete($idCarrito);
     }
 
-    // Método para vaciar completamente el carrito de un usuario
     public function vaciarCarrito(int $idUsuario): bool
     {
+        log_message('debug', 'Vaciando carrito para usuario: {idUsuario}', ['idUsuario' => $idUsuario]);
+        // Para delete, el método del modelo sigue siendo seguro
         return $this->where('id_usuario', $idUsuario)->delete();
     }
 }

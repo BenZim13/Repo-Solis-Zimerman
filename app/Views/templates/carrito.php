@@ -39,13 +39,9 @@
                 <?php foreach ($carrito as $item): ?>
                     <tr>
                         <td>
-                            <?php 
-                                // Muestra el nombre del producto, que ahora viene del join en el modelo
-                                echo esc($item['nombre_producto'] ?? 'Producto Desconocido'); 
-                                // Opcional: Mostrar imagen del producto si 'image_url' está disponible
-                                // if (!empty($item['image_url'])) {
-                                //     echo '<br><img src="' . esc($item['image_url']) . '" alt="' . esc($item['nombre_producto']) . '" style="width: 50px; height: auto;">';
-                                // }
+                            <?php
+                                // Asegúrate de que el nombre_producto siempre esté disponible
+                                echo esc($item['nombre_producto'] ?? 'Producto Desconocido');
                             ?>
                         </td>
                         <td class="text-end">$<?= number_format(esc($item['precio_producto']), 2, ',', '.') ?></td>
@@ -88,7 +84,11 @@
                 <?= csrf_field() ?>
                 <button type="submit" class="btn btn-warning"><i class="bi bi-trash-fill me-2"></i>Vaciar Carrito</button>
             </form>
-            <a href="<?= base_url('checkout') ?>" class="btn btn-success"><i class="bi bi-bag-check-fill me-2"></i>Finalizar Compra</a>
+            <!-- AÑADIR ESTE FORMULARIO PARA FINALIZAR LA COMPRA -->
+            <form action="<?= base_url('carrito/finalizarCompra') ?>" method="post" class="d-inline">
+                <?= csrf_field() ?>
+                <button type="submit" class="btn btn-success"><i class="bi bi-bag-check-fill me-2"></i>Finalizar Compra</button>
+            </form>
         </div>
 
     <?php endif; ?>
