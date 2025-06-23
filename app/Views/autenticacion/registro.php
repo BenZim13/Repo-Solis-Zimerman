@@ -1,10 +1,10 @@
 <?= $this->extend('templates/main_layout') ?>
 <?= $this->section('content_for_layout') ?>
-<div class="container mt-5">
+<div class="container mt-4 registro">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header bg-dark text-white text-center">
+                <div class="card-header text-center">
                     <h2 class="mb-0"><?= $titulo ?? 'Registrarse' ?></h2>
                 </div>
                 <div class="card-body">
@@ -26,25 +26,32 @@
 
                     <form action="<?= base_url('registrarse') ?>" method="post">
                         <?= csrf_field() ?>
-                        <div class="mb-3">
+                        <div class=" form-floating mb-3">
+                             <input type="text" class="form-control" id="nombre" name="nombre" value="<?= old('nombre') ?>" placeholder="ingrese su nombre" required>
                             <label for="nombre" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" value="<?= old('nombre') ?>" required>
+                           
                         </div>
-                        <div class="mb-3">
+
+                        <div class=" form-floating mb-3">
+                            <input type="email" class="form-control" id="email" name="email" value="<?= old('email') ?>" placeholder="emailejemplo@gmail.com" required>
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" value="<?= old('email') ?>" required>
                         </div>
-                        <div class="mb-3">
+
+                        <div class=" form-floating mb-3">
+                            <input type="password" class="form-control" id="contraseña" name="contraseña" placeholder=" Contraseña" required>
                             <label for="contraseña" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="contraseña" name="contraseña" required>
+                            
                         </div>
-                        <div class="mb-3">
+
+                        <div class=" form-floating mb-3">
+                            <input type="password" class="form-control" id="confirmar_contraseña" name="confirmar_contraseña" placeholder=" Confirmar contraseña" required>
                             <label for="confirmar_contraseña" class="form-label">Confirmar Contraseña</label>
-                            <input type="password" class="form-control" id="confirmar_contraseña" name="confirmar_contraseña" required>
                         </div>
+
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Registrarse</button>
+                            <button type="submit" class="btn btn-primary">Crea tu cuenta</button>
                         </div>
+
                     </form>
                     <p class="text-center mt-3">
                         ¿Ya tienes una cuenta? <a href="<?= base_url('ingresar') ?>">Ingresa aquí</a>

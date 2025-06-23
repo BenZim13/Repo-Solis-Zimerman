@@ -1,10 +1,10 @@
 <?= $this->extend('templates/main_layout') ?>
 <?= $this->section('content_for_layout') ?>
-<div class="container mt-5">
+<div class="container mt-5 ingreso">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header bg-dark text-white text-center">
+                <div class="card-header text-center">
                     <h2 class="mb-0"><?= $titulo ?? 'Ingresar' ?></h2>
                 </div>
                 <div class="card-body">
@@ -26,14 +26,17 @@
 
                     <form action="<?= base_url('ingresar') ?>" method="post">
                         <?= csrf_field() ?>
-                        <div class="mb-3">
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="email" name="email" value="<?= old('email') ?>" placeholder="ingrese su email" required>
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" value="<?= old('email') ?>" required>
+                            
                         </div>
-                        <div class="mb-3">
+
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="contraseña" name="contraseña" placeholder="ingrese su contraseña" required>
                             <label for="contraseña" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="contraseña" name="contraseña" required>
                         </div>
+
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">Ingresar</button>
                         </div>
