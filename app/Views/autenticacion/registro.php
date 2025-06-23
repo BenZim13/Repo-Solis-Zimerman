@@ -9,27 +9,34 @@
                 </div>
                 <div class="card-body">
                     <?php if (session()->getFlashdata('exito')): ?>
-                        <div class="alert alert-success"><?= session()->getFlashdata('exito') ?></div>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <?= session()->getFlashdata('exito') ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                     <?php endif; ?>
                     <?php if (session()->getFlashdata('error')): ?>
-                        <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <?= session()->getFlashdata('error') ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                     <?php endif; ?>
-                    <?php if (isset($errores)): ?>
-                        <div class="alert alert-danger">
+
+                    <?php if (session()->getFlashdata('errors')): ?> <!-- CAMBIADO A 'errors' -->
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <ul>
-                                <?php foreach ($errores as $error): ?>
+                                <?php foreach (session()->getFlashdata('errors') as $error): ?> <!-- CAMBIADO A 'errors' -->
                                     <li><?= esc($error) ?></li>
                                 <?php endforeach; ?>
                             </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
 
                     <form action="<?= base_url('registrarse') ?>" method="post">
                         <?= csrf_field() ?>
                         <div class=" form-floating mb-3">
-                             <input type="text" class="form-control" id="nombre" name="nombre" value="<?= old('nombre') ?>" placeholder="ingrese su nombre" required>
+                            <input type="text" class="form-control" id="nombre" name="nombre" value="<?= old('nombre') ?>" placeholder="ingrese su nombre" required>
                             <label for="nombre" class="form-label">Nombre</label>
-                           
                         </div>
 
                         <div class=" form-floating mb-3">
@@ -40,7 +47,6 @@
                         <div class=" form-floating mb-3">
                             <input type="password" class="form-control" id="contraseña" name="contraseña" placeholder=" Contraseña" required>
                             <label for="contraseña" class="form-label">Contraseña</label>
-                            
                         </div>
 
                         <div class=" form-floating mb-3">

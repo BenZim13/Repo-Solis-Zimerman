@@ -43,15 +43,20 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="usuarioDropdown">
                     <?php if (session()->get('estaLogueado')): ?>
-                        <li><span class="dropdown-item-text">¡Hola, <?= esc(session()->get('nombre') ?? 'Usuario') ?>!</span></li>
-                        <?php if (session()->get('rol') == 1): // Rol 1 es Administrador ?>
+                        <li><span class="dropdown-item-text">¡Hola, <?= esc(session()->get('nombre_usuario') ?? 'Usuario') ?>!</span></li> <!-- CAMBIADO A 'nombre_usuario' -->
+                        <?php if (session()->get('rol_usuario') == 1): // Rol 1 es Administrador, CAMBIADO A 'rol_usuario' ?>
                             <li><span class="dropdown-item-text small text-muted">(Administrador)</span></li>
-                            <li><a class="dropdown-item" href="<?= base_url('administracion/panel') ?>">Panel Admin</a></li> <?php else: ?>
+                            <li><a class="dropdown-item" href="<?= base_url('administracion/panel') ?>">Panel Admin</a></li>
+                        <?php else: ?>
                             <li><span class="dropdown-item-text small text-muted">(Cliente)</span></li>
                         <?php endif; ?>
-                        <li><a class="dropdown-item" href="<?= base_url('mi-perfil') ?>">Mi Perfil</a></li> <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="<?= base_url('salir') ?>">Cerrar Sesión</a></li> <?php else: ?>
-                        <li><a class="dropdown-item" href="<?= base_url('ingresar') ?>">Ingresar</a></li> <li><a class="dropdown-item" href="<?= base_url('registrarse') ?>">Registrarse</a></li> <?php endif; ?>
+                        <li><a class="dropdown-item" href="<?= base_url('mi-perfil') ?>">Mi Perfil</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="<?= base_url('salir') ?>">Cerrar Sesión</a></li>
+                    <?php else: ?>
+                        <li><a class="dropdown-item" href="<?= base_url('ingresar') ?>">Ingresar</a></li>
+                        <li><a class="dropdown-item" href="<?= base_url('registrarse') ?>">Registrarse</a></li>
+                    <?php endif; ?>
                 </ul>
             </div>
 
@@ -67,16 +72,17 @@
             </div>
             <div class="offcanvas-body">
                 <ul class="navbar-nav">
-
-                    <?php if (session()->get('estaLogueado') && session()->get('rol') == 1): ?>
+                    <?php if (session()->get('estaLogueado') && session()->get('rol_usuario') == 1): ?> <!-- CAMBIADO A 'rol_usuario' -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAdmin" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Administración
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdmin">
-                                <li><a class="dropdown-item" href="<?= base_url('administracion/panel') ?>">Panel Principal Admin</a></li> <li><a class="dropdown-item" href="<?= base_url('productos/listar') ?>">Gestión de Productos</a></li>
+                                <li><a class="dropdown-item" href="<?= base_url('administracion/panel') ?>">Panel Principal Admin</a></li>
+                                <li><a class="dropdown-item" href="<?= base_url('productos/listar') ?>">Gestión de Productos</a></li>
                                 <li><a class="dropdown-item" href="<?= base_url('productos/agregar') ?>">Agregar Producto</a></li>
-                                <li><a class="dropdown-item" href="<?= base_url('administracion/usuarios') ?>">Gestión de Usuarios</a></li> </ul>
+                                <li><a class="dropdown-item" href="<?= base_url('administracion/usuarios') ?>">Gestión de Usuarios</a></li>
+                            </ul>
                         </li>
                     <?php endif; ?>
 
