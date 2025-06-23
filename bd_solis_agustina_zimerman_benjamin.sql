@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 23-06-2025 a las 01:59:41
+-- Tiempo de generación: 23-06-2025 a las 23:14:38
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `bd_solis_agustina_zimerman_benjamin`
 --
+CREATE DATABASE IF NOT EXISTS `bd_solis_agustina_zimerman_benjamin` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `bd_solis_agustina_zimerman_benjamin`;
 
 -- --------------------------------------------------------
 
@@ -27,6 +29,7 @@ SET time_zone = "+00:00";
 -- Estructura de tabla para la tabla `carrito`
 --
 
+DROP TABLE IF EXISTS `carrito`;
 CREATE TABLE `carrito` (
   `id_carrito` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
@@ -41,6 +44,7 @@ CREATE TABLE `carrito` (
 -- Estructura de tabla para la tabla `categoria`
 --
 
+DROP TABLE IF EXISTS `categoria`;
 CREATE TABLE `categoria` (
   `id_categoria` int(50) NOT NULL,
   `nombre` varchar(20) NOT NULL
@@ -65,6 +69,7 @@ INSERT INTO `categoria` (`id_categoria`, `nombre`) VALUES
 -- Estructura de tabla para la tabla `migrations`
 --
 
+DROP TABLE IF EXISTS `migrations`;
 CREATE TABLE `migrations` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `version` varchar(255) NOT NULL,
@@ -89,6 +94,7 @@ INSERT INTO `migrations` (`id`, `version`, `class`, `group`, `namespace`, `time`
 -- Estructura de tabla para la tabla `producto`
 --
 
+DROP TABLE IF EXISTS `producto`;
 CREATE TABLE `producto` (
   `id_producto` int(50) NOT NULL,
   `nombre` varchar(255) NOT NULL,
@@ -112,8 +118,9 @@ INSERT INTO `producto` (`id_producto`, `nombre`, `descripcion`, `precio`, `stock
 (1234, 'Fideos Favorita', ' Spaguetti 500 gr', 400.00, 5, NULL, 1, '2025-06-03 11:41:14', '2025-06-09 20:47:58', '2025-06-09 20:47:58', 5),
 (1235, 'Gaseosa Coca Cola', '1 litro sabor cola', 3500.00, 3, '', 1, '2025-06-09 20:33:41', '2025-06-09 20:36:29', '2025-06-09 20:36:29', 7),
 (1236, 'Gaseosa Coca Cola', '1 litro', 6000.00, 20, '', 1, '2025-06-09 20:46:59', '2025-06-09 20:47:26', '2025-06-09 20:47:26', 7),
-(1237, 'Gaseosa Coca Cola', '1 litro', 6000.00, 12, '', 1, '2025-06-09 21:21:11', '2025-06-22 23:30:04', NULL, 7),
-(1238, 'Pan', 'Lactal', 1200.00, 3, '', 1, '2025-06-09 21:21:58', '2025-06-22 23:30:04', NULL, 2);
+(1237, 'Gaseosa Coca Cola', '1 litro', 6000.00, 11, '', 1, '2025-06-09 21:21:11', '2025-06-23 00:10:39', NULL, 7),
+(1238, 'Pan', 'Lactal', 1200.00, 3, '', 1, '2025-06-09 21:21:58', '2025-06-23 20:29:36', '2025-06-23 20:29:36', 2),
+(1239, 'Costilla de Cerdo', 'Cerdo chancho', 5000.00, 20, '', 1, '2025-06-23 20:30:22', '2025-06-23 20:30:22', NULL, 3);
 
 -- --------------------------------------------------------
 
@@ -121,6 +128,7 @@ INSERT INTO `producto` (`id_producto`, `nombre`, `descripcion`, `precio`, `stock
 -- Estructura de tabla para la tabla `usuarios`
 --
 
+DROP TABLE IF EXISTS `usuarios`;
 CREATE TABLE `usuarios` (
   `id_usuario` int(11) NOT NULL,
   `nombre` varchar(255) NOT NULL,
@@ -138,7 +146,9 @@ INSERT INTO `usuarios` (`id_usuario`, `nombre`, `email`, `password`, `rol`, `act
 (1, 'Benjamin', 'benja@gmail.com', '$2y$10$953ss/R/PHgD6PMxHOPJ3OqboKza9BgyKhqp7WWdVy6GFwH/CwY0e', 2, 1),
 (2, 'Agustin', 'agus@gmail.com', '$2y$10$VZwHMBe2U5xgo3alACF2zOLx8iJJ5RiSHL8Lnf.8cn9jsV.ZCm9j.', 2, 1),
 (3, 'marta', 'marta@gmail.com', '$2y$10$RmIMcvl/yYcENNT/6/4IS.N123yk/5SX9PX5e8ooqRAjfKGEh6Jay', 2, 1),
-(4, 'tobias', 'tobias@gmail.com', '$2y$10$TSdcXeny9Zfs/BCtoQF.6uPUp92Ah.HRghDPJtoklbAjBKttwNybO', 2, 1);
+(4, 'tobias', 'tobias@gmail.com', '$2y$10$TSdcXeny9Zfs/BCtoQF.6uPUp92Ah.HRghDPJtoklbAjBKttwNybO', 2, 1),
+(5, 'BenjaminZim', 'benjaminzimermanxiaomi@gmail.com', '$2y$10$BxNqF3gE21b3KsB1E7ylKuhct/RJpmxdDpUqCCenDdidL3Hbphfk2', 1, 1),
+(7, 'Martin', 'martin3@gmail.com', '$2y$10$8t3DoKufsbuGPN3kXPwD3.Tc6sop6ppzLnlvtuMzAL0c7B8iN.WVy', 2, 1);
 
 --
 -- Índices para tablas volcadas
@@ -187,7 +197,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `carrito`
 --
 ALTER TABLE `carrito`
-  MODIFY `id_carrito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id_carrito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `categoria`
@@ -205,13 +215,13 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT de la tabla `producto`
 --
 ALTER TABLE `producto`
-  MODIFY `id_producto` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1239;
+  MODIFY `id_producto` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1240;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Restricciones para tablas volcadas
