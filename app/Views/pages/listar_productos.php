@@ -65,6 +65,9 @@
                                 <a href="<?= base_url('productos/editar/' . esc($producto['id_producto'])) ?>" class="btn btn-sm btn-warning mb-1" title="Editar">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
+                                <a href="<?= base_url('productos/toggleActivo/' . esc($producto['id_producto'])) ?>" class="btn btn-sm btn-secondary mb-1" title="Activar/Desactivar">
+                                    <i class="bi bi-toggle-on"></i>
+                                </a>
                                 <a href="<?= base_url('productos/eliminar/' . esc($producto['id_producto'])) ?>" class="btn btn-sm btn-danger mb-1" title="Eliminar" onclick="return confirm('¿Estás seguro de que quieres eliminar este producto? (Se ocultará, no se borrará permanentemente)')">
                                     <i class="bi bi-trash"></i>
                                 </a>

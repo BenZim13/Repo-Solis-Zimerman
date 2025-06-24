@@ -146,7 +146,8 @@ class Producto extends BaseController
             'precio'       => 'required|numeric|greater_than[0]',
             'stock'        => 'required|integer|greater_than_equal_to[0]',
             'id_categoria' => 'required|integer',
-            'activo'       => 'required|in_list[0,1]',
+            // 'activo' field is optional because unchecked checkbox won't send it
+            'activo'       => 'permit_empty|in_list[0,1]',
             'image_url'    => 'permit_empty|valid_url_strict',
         ];
 
@@ -156,6 +157,9 @@ class Producto extends BaseController
 
         $id_producto = $this->request->getPost('id_producto');
 
+        // Checkbox unchecked means 'activo' is not sent, so default to 0
+        $activo = $this->request->getPost('activo') ?? 0;
+
         $data = [
             'id_producto'   => $id_producto, // Necesario para que save() sepa que es una actualización
             'nombre'        => $this->request->getPost('nombre'),
@@ -163,7 +167,7 @@ class Producto extends BaseController
             'precio'        => $this->request->getPost('precio'),
             'stock'         => $this->request->getPost('stock'),
             'image_url'     => $this->request->getPost('image_url'),
-            'activo'        => $this->request->getPost('activo'),
+            'activo'        => $activo,
             'id_categoria'  => $this->request->getPost('id_categoria'),
         ];
 
@@ -222,6 +226,26 @@ class Producto extends BaseController
         } else {
             return redirect()->to(base_url('productos/listar'))->with('error', 'No se pudo eliminar ningún producto seleccionado.');
         }
+    }
+
+    /**
+     * Cambia el estado activo/inactivo de un producto.
+     * @param int $id ID del producto a cambiar estado.
+     * @return \CodeIgniter\HTTP\RedirectResponse
+     */
+    public function toggleActivo(int $id): \CodeIgniter\HTTP\RedirectResponse
+    {
+        $producto = $this->productoModel->find($id);
+
+        if (!$producto) {
+            return redirect()->to(base_url('productos/listar'))->with('error', 'Producto no encontrado para cambiar estado.');
+        }
+
+        $nuevoEstado = $producto['activo'] ? 0 : 1;
+
+        $this->productoModel->update($id, ['activo' => $nuevoEstado]);
+
+        return redirect()->to(base_url('productos/listar'))->with('success', 'Estado del producto actualizado correctamente.');
     }
 
 public function catalogoPorCategoria(int $id_categoria)

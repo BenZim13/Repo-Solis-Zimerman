@@ -76,7 +76,7 @@ class Filters extends BaseFilters
     public array $globals = [
         'before' => [
             // 'honeypot',
-            'csrf',      // DESCOMENTADO
+            //'csrf',      // DESCOMENTADO - temporalmente deshabilitado para pruebas en carrito/agregar
             // 'invalidchars',
         ],
         'after' => [
