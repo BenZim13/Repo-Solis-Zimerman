@@ -60,7 +60,7 @@ class CarritoController extends BaseController
             session()->setFlashdata('error', 'Error al agregar el producto al carrito.');
         }
 
-        return redirect()->back();
+        return redirect()->to(base_url('carrito'));
     }
 
     public function actualizar(): \CodeIgniter\HTTP\RedirectResponse
