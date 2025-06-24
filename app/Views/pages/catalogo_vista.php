@@ -22,12 +22,12 @@
               <p class="card-text"><small class="text-muted"><?= esc($producto['nombre_categoria'] ?? 'Sin categoría') ?></small></p>
               <h6>$<?= number_format(esc($producto['precio']), 2, ',', '.') ?></h6>
               <?php if (esc($producto['stock']) > 0): ?>
-                <span class="badge bg-success mb-2"><?= esc($producto['stock']) ?> en stock</span>
+                <span class="badge bg-dark mb-2"><?= esc($producto['stock']) ?> en stock</span>
               <?php else: ?>
                 <span class="badge bg-danger mb-2">Agotado</span>
               <?php endif; ?>
               <div class="d-grid gap-2">
-                <a href="<?= base_url('producto/' . $producto['id_producto']) ?>" class="btn btn-info btn-sm mb-2">
+                <a href="<?= base_url('producto/' . $producto['id_producto']) ?>" class="btn btn-secondary btn-sm mb-2">
                   <i class="bi bi-eye"></i> Ver Detalle
                 </a>
                 <?php if ($producto['stock'] > 0): ?>
@@ -35,7 +35,7 @@
                     <?= csrf_field() ?>
                     <input type="hidden" name="id_producto" value="<?= esc($producto['id_producto']) ?>">
                     <input type="hidden" name="cantidad" value="1">
-                    <button type="submit" class="btn btn-success btn-sm">
+                    <button type="submit" class="btn btn-sm">
                       <i class="bi bi-cart-plus"></i> Añadir al Carrito
                     </button>
                   </form>

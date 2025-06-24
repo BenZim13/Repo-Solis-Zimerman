@@ -5,30 +5,55 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-9">
-                <div class="card border-0 card-form-contacto shadow-sm"> <div class="card-header bg-primary text-white"> <h2 class="mb-0 text-center"> Formulario de Contacto</h2>
+                <div class="card border-0 card-form-contacto shadow-sm">
+                    <div class="card-header text-white" style="background-color:#ff5722;"> <h2 class="mb-0 text-center"> Formulario de Contacto</h2>
                     </div>
                     <div class="card-body">
-                        <form class="mt-4" action="#" method="post"> <div class="mb-3"> <label for="motivo" class="form-label">Motivo de Consulta</label>
-                                <select class="form-select" id="motivo" name="motivo" aria-label="Motivo de consulta">
-                                    <option selected>Selecciona un motivo</option>
-                                    <option value="1">Consulta</option>
-                                    <option value="2">Reclamo</option>
-                                    <option value="3">Sugerencia</option>
-                                </select>
+                        <?php if (session()->getFlashdata('success')): ?>
+                            <div class="alert alert-success" role="alert">
+                                <?= session()->getFlashdata('success') ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (session()->getFlashdata('error')): ?>
+                            <div class="alert alert-danger" role="alert">
+                                <?= session()->getFlashdata('error') ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (session()->getFlashdata('errors')): ?>
+                            <div class="alert alert-danger" role="alert">
+                                <ul class="mb-0 text-start">
+                                    <?php foreach (session()->getFlashdata('errors') as $error): ?>
+                                        <li><?= $error ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
+
+                        <form class="mt-4" action="<?= base_url('contact/submit') ?>" method="post">
+                            <?= csrf_field() ?>
+                            <div class="mb-3">
+                                <label for="motivo" class="form-label">Motivo de Consulta</label>
+                                <select class="form-select" id="motivo" name="motivo" aria-label="Motivo de consulta" required>
+                                    <option value="">Selecciona un motivo</option> <option value="consulta" <?= old('motivo') == 'consulta' ? 'selected' : '' ?>>Consulta</option>
+                                    <option value="reclamo" <?= old('motivo') == 'reclamo' ? 'selected' : '' ?>>Reclamo</option>
+                                    <option value="sugerencia" <?= old('motivo') == 'sugerencia' ? 'selected' : '' ?>>Sugerencia</option>
+                                    <option value="otro" <?= old('motivo') == 'otro' ? 'selected' : '' ?>>Otro</option> </select>
                             </div>
                             <div class="mb-3">
                                 <label for="nombre" class="form-label">Nombre</label>
-                                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Tu nombre" required>
+                                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Tu nombre" value="<?= old('nombre') ?>" required>
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Correo electrónico</label>
-                                <input type="email" class="form-control" id="email" name="email" placeholder="Tu correo electrónico" required>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Tu correo electrónico" value="<?= old('email') ?>" required>
                             </div>
                             <div class="mb-3">
                                 <label for="mensaje" class="form-label">Mensaje</label>
-                                <textarea class="form-control" id="mensaje" name="mensaje" rows="4" placeholder="Escribe tu mensaje aquí" required></textarea>
+                                <textarea class="form-control" id="mensaje" name="mensaje" rows="4" placeholder="Escribe tu mensaje aquí" required><?= old('mensaje') ?></textarea>
                             </div>
-                            <button type="submit" class="btn btn-primary">Enviar</button>
+                            <button type="submit" class="btn btn-primary" style="background-color:#ff5722; border-color:#ff5722;">Enviar</button>
                         </form>
                     </div>
                 </div>
@@ -90,7 +115,7 @@
 <section id="mapa-ubicacion" class="container-fluid py-5"> <div class="container">
         <h2 class="text-center mb-4" style="color:#ff5722;">Ubicación</h2>
         <div class="ratio ratio-16x9"> <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3539.0605963073356!2d-58.8354922849202!3d-27.464670282898124!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94456ca010b98a13%3A0xc4a1b0b7e4f9b09!2sCorrientes!5e0!3m2!1ses-419!2sar!4v1625000000000!5m2!1ses-419!2sar"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3539.110595089307!2d-58.8319694!3d-27.4697966!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94456ca123456789%3A0x123456789abcdef!2sCorrientes%2C%20Corrientes%20Province%2C%20Argentina!5e0!3m2!1sen!2sus!4v1678901234567!5m2!1sen!2sus"
                 width="100%"
                 height="400"
                 style="border:0;"

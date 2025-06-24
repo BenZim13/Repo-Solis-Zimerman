@@ -59,6 +59,7 @@
                         <li class="list-group-item"><a href="<?= base_url('administracion/usuarios/nuevo') ?>" class="text-decoration-none"><i class="bi bi-person-plus-fill me-2 text-success"></i>Crear Nuevo Usuario</a></li>
                         <li class="list-group-item"><a href="<?= base_url('productos/listar') ?>" class="text-decoration-none"><i class="bi bi-box-seam me-2 text-primary"></i>Administrar Productos (Listar/Editar/Baja)</a></li>
                         <li class="list-group-item"><a href="<?= base_url('productos/agregar') ?>" class="text-decoration-none"><i class="bi bi-plus-square-fill me-2 text-success"></i>Agregar Nuevo Producto</a></li>
+                        <li class="list-group-item"><a href="<?= base_url('administracion/consultas') ?>" class="text-decoration-none"><i class="bi bi-chat-dots-fill me-2 text-info"></i>Gestionar Consultas</a></li>
                         <li class="list-group-item"><a href="#" class="text-decoration-none text-muted"><i class="bi bi-journal-text me-2"></i>Ver Órdenes (Funcionalidad Futura)</a></li>
                     </ul>
                 </div>

@@ -55,6 +55,11 @@ $routes->group('administracion', ['filter' => 'admin'], static function(RouteCol
     $routes->post('usuarios/guardarUsuario', 'Administracion::guardarUsuario');
     $routes->get('usuarios/editar/(:num)', 'Administracion::editar/$1');
     $routes->post('usuarios/actualizarUsuario', 'Administracion::actualizarUsuario');
+
+    // NUEVAS RUTAS PARA GESTIÓN DE CONSULTAS
+    $routes->get('consultas', 'ConsultasController::index', ['as' => 'gestion_consultas']);
+    $routes->get('consultas/ver/(:num)', 'ConsultasController::view/$1');
+    $routes->post('consultas/actualizarEstado/(:num)', 'ConsultasController::updateStatus/$1');
 });
 
 // Rutas de Administración de Productos (protegidas por filtro 'admin')
@@ -94,6 +99,10 @@ $routes->get('quienessomos',    'Home::quienessomos');
 $routes->get('comercializacion','Home::comercializacion');
 $routes->get('contacto',        'Home::contacto');
 $routes->get('terminos',        'Home::terminos');
+
+// NUEVAS RUTAS PARA EL FORMULARIO DE CONTACTO PÚBLICO
+$routes->get('contacto', 'ContactController::index'); // Ya tienes esta ruta, pero asegúrate que apunte al ContactController
+$routes->post('contact/submit', 'ContactController::submit'); // ¡Añade esta línea!
 
 // -----------------------------------------------------------------------------
 // Catálogo y productos (públicos) - Estas rutas son más genéricas, van antes del catch-all
