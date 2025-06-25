@@ -51,7 +51,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- INICIO: Nueva tarjeta para Consultas Pendientes -->
+                        <!-- NUEVA TARJETA PARA CONSULTAS PENDIENTES -->
                         <div class="col-md-4">
                             <div class="card text-white bg-danger shadow-sm h-100">
                                 <div class="card-body">
@@ -61,7 +61,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- FIN: Nueva tarjeta para Consultas Pendientes -->
+                        <!-- FIN: NUEVA TARJETA PARA CONSULTAS PENDIENTES -->
                     </div>
 
                     <h4 class="mt-4">Opciones de Administración:</h4>
@@ -70,8 +70,10 @@
                         <li class="list-group-item"><a href="<?= base_url('administracion/usuarios/nuevo') ?>" class="text-decoration-none"><i class="bi bi-person-plus-fill me-2 text-success"></i>Crear Nuevo Usuario</a></li>
                         <li class="list-group-item"><a href="<?= base_url('productos/listar') ?>" class="text-decoration-none"><i class="bi bi-box-seam me-2 text-primary"></i>Administrar Productos (Listar/Editar/Baja)</a></li>
                         <li class="list-group-item"><a href="<?= base_url('productos/agregar') ?>" class="text-decoration-none"><i class="bi bi-plus-square-fill me-2 text-success"></i>Agregar Nuevo Producto</a></li>
-                        <li class="list-group-item"><a href="<?= base_url('administracion/consultas') ?>" class="text-decoration-none"><i class="bi bi-question-circle-fill me-2 text-info"></i>Gestión de Consultas</a></li> <!-- Enlace a Consultas -->
-                        <li class="list-group-item"><a href="#" class="text-decoration-none text-muted"><i class="bi bi-journal-text me-2"></i>Ver Órdenes (Funcionalidad Futura)</a></li>
+                        <!-- ENLACE A GESTIÓN DE CONSULTAS -->
+                        <li class="list-group-item"><a href="<?= base_url('administracion/consultas') ?>" class="text-decoration-none"><i class="bi bi-question-circle-fill me-2 text-info"></i>Gestión de Consultas</a></li>
+                        <!-- FIN: ENLACE A GESTIÓN DE CONSULTAS -->
+
                     </ul>
                 </div>
             </div>

@@ -55,7 +55,7 @@ class CarritoController extends BaseController
         // Esto se manejará al finalizar la compra.
 
         if ($this->carritoModel->agregarProducto($idUsuario, $idProducto, $cantidad)) {
-            session()->setFlashdata('success', 'Producto agregado al carrito.');
+            session()->setFlashdata('success', 'Producto agregado, revise su carrito.'); // <-- MENSAJE MODIFICADO AQUÍ
         } else {
             session()->setFlashdata('error', 'Error al agregar el producto al carrito.');
         }

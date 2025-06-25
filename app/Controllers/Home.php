@@ -3,22 +3,31 @@
 namespace App\Controllers;
 
 use App\Models\CategoriasModel;
+use App\Models\ProductosModel; // Importar el modelo de productos
 
 class Home extends BaseController
 {
-    protected $categoriaModel;
+    protected CategoriasModel $categoriaModel;
+    protected ProductosModel $productosModel; // Declarar propiedad para el modelo de productos
 
     public function __construct()
     {
         $this->categoriaModel = new CategoriasModel();
+        $this->productosModel = new ProductosModel(); // Inicializar el modelo de productos
     }
 
     public function index(): string
     {
         $categorias = $this->categoriaModel->getAllCategories();
+        // Obtener productos para la sección de inicio
+        $productosDestacados = $this->productosModel->where('activo', 1)
+                                                    ->orderBy('fecha_alta', 'DESC') // O cualquier otra lógica de ordenamiento para "más buscados"
+                                                    ->limit(6) // Obtener 6 productos para las cards
+                                                    ->findAll();
         $data = [
             'titulo' => 'Inicio - SuperCarpi',
             'categorias_menu' => $categorias,
+            'productos_destacados' => $productosDestacados, // Pasar los productos destacados a la vista
         ];
         return view('home/inicio', $data);
     }
@@ -26,9 +35,15 @@ class Home extends BaseController
     public function cuerpo(): string
     {
         $categorias = $this->categoriaModel->getAllCategories();
+        // Obtener productos para la sección de inicio
+        $productosDestacados = $this->productosModel->where('activo', 1)
+                                                    ->orderBy('fecha_alta', 'DESC') // O cualquier otra lógica de ordenamiento para "más buscados"
+                                                    ->limit(6) // Obtener 6 productos para las cards
+                                                    ->findAll();
         $data = [
             'titulo' => 'Página Principal - SuperCarpi',
             'categorias_menu' => $categorias,
+            'productos_destacados' => $productosDestacados, // Pasar los productos destacados a la vista
         ];
         return view('home/inicio', $data);
     }
