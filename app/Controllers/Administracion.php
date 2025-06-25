@@ -2,17 +2,23 @@
 
 use App\Models\UsuarioModelo;
 use App\Models\ProductosModel;
+use App\Models\ConsultaModel;
 use CodeIgniter\HTTP\RedirectResponse;
+// Eliminamos: use CodeIgniter\API\ResponseTrait;
 
 class Administracion extends BaseController
 {
+    // Eliminamos: use ResponseTrait;
+
     protected UsuarioModelo $usuarioModel;
     protected ProductosModel $productosModel;
+    protected ConsultaModel $consultaModel;
 
     public function __construct()
     {
         $this->usuarioModel = new UsuarioModelo();
         $this->productosModel = new ProductosModel();
+        $this->consultaModel = new ConsultaModel();
     }
 
     /**
@@ -25,8 +31,9 @@ class Administracion extends BaseController
             'titulo' => 'Panel de Administración',
             'totalUsuarios' => $this->usuarioModel->countAllResults(),
             'totalProductos' => $this->productosModel->countAllResults(),
+            'totalConsultasPendientes' => $this->consultaModel->where('estado', 'pendiente')->countAllResults(),
         ];
-        return view('administracion/panel', $data); // Apunta a views/administracion/panel.php
+        return view('administracion/panel', $data); // Ruta corregida a 'administracion/panel'
     }
 
     /**
@@ -40,7 +47,10 @@ class Administracion extends BaseController
             'titulo' => 'Administración de Usuarios',
             'usuarios' => $usuarios,
         ];
-        return view('administracion/usuarios', $data); // Apunta a views/administracion/usuarios.php
+        // Asumo que tu vista de listar usuarios está directamente en 'administracion/usuarios.php'
+        // Si tienes una subcarpeta como 'administracion/usuarios/listar.php', ajusta aquí:
+        // return view('administracion/usuarios/listar', $data);
+        return view('administracion/usuarios', $data);
     }
 
     /**
@@ -82,7 +92,10 @@ class Administracion extends BaseController
     public function nuevo(): string
     {
         $data['titulo'] = 'Crear Nuevo Usuario';
-        return view('administracion/nuevo_usuario', $data); // Apunta a views/administracion/nuevo_usuario.php
+        // Asumo que tu vista de nuevo usuario está directamente en 'administracion/nuevo_usuario.php'
+        // Si tienes una subcarpeta como 'administracion/usuarios/nuevo.php', ajusta aquí:
+        // return view('administracion/usuarios/nuevo', $data);
+        return view('administracion/nuevo_usuario', $data);
     }
 
     /**
@@ -130,7 +143,10 @@ class Administracion extends BaseController
         if ($usuario) {
             $data['titulo'] = 'Editar Usuario';
             $data['usuario'] = $usuario;
-            return view('administracion/editar_usuario', $data); // Apunta a views/administracion/editar_usuario.php
+            // Asumo que tu vista de editar usuario está directamente en 'administracion/editar_usuario.php'
+            // Si tienes una subcarpeta como 'administracion/usuarios/editar.php', ajusta aquí:
+            // return view('administracion/usuarios/editar', $data);
+            return view('administracion/editar_usuario', $data);
         } else {
             return redirect()->to(base_url('administracion/usuarios'))->with('error', 'Usuario no encontrado.');
         }
@@ -172,7 +188,6 @@ class Administracion extends BaseController
             $data['password'] = password_hash($this->request->getPost('password'), PASSWORD_DEFAULT);
         }
 
-        // Validaciones de seguridad:
         if ((int)session()->get('id_usuario') === $id && $this->request->getPost('rol') !== 'admin') {
              return redirect()->back()->withInput()->with('error', 'No puedes cambiar tu propio rol de administrador.');
         }
@@ -190,5 +205,95 @@ class Administracion extends BaseController
         } else {
             return redirect()->back()->withInput()->with('error', 'No se pudo actualizar el usuario.');
         }
+    }
+
+    /**
+     * Muestra la lista de consultas enviadas por los usuarios.
+     * Protegido por el filtro 'admin'.
+     * @return string
+     */
+    public function consultas(): string
+    {
+        $consultas = $this->consultaModel->getConsultasConUsuario();
+
+        $data = [
+            'titulo' => 'Gestión de Consultas',
+            'consultas' => $consultas,
+        ];
+        return view('administracion/consultas/listar_consultas', $data);
+    }
+
+    /**
+     * Muestra el detalle de una consulta específica de forma convencional.
+     * Protegido por el filtro 'admin'.
+     * @param int $idConsulta ID de la consulta a ver.
+     * @return string|RedirectResponse
+     */
+    public function ver_detalle(int $idConsulta): string|RedirectResponse
+    {
+        $consulta = $this->consultaModel->getConsultaConUsuario($idConsulta);
+
+        if (!$consulta) {
+            session()->setFlashdata('error', 'Consulta no encontrada.');
+            return redirect()->to(base_url('administracion/consultas'));
+        }
+
+        $data = [
+            'titulo' => 'Detalle de Consulta',
+            'consulta' => $consulta,
+        ];
+        return view('administracion/consultas/ver_detalle', $data);
+    }
+
+    /**
+     * Cambia el estado de una consulta (ej. de 'pendiente' a 'respondida').
+     * @return RedirectResponse
+     */
+    public function cambiar_estado(): RedirectResponse
+    {
+        $idConsulta = (int) $this->request->getPost('id_consulta');
+        $nuevoEstado = $this->request->getPost('nuevo_estado'); // Ej: 'respondida', 'archivada'
+
+        // Validar que el ID y el estado son válidos
+        if (empty($idConsulta) || !in_array($nuevoEstado, ['pendiente', 'respondida', 'archivada'])) {
+            return redirect()->back()->with('error', 'Datos de estado de consulta inválidos.');
+        }
+
+        // --- INICIO DE LA CORRECCIÓN ---
+        // Usar update directamente con where para evitar problemas con timestamps/tipos de datos en el modelo
+        $updateResult = $this->consultaModel->builder()
+                                            ->where('id_consulta', $idConsulta)
+                                            ->set('estado', $nuevoEstado)
+                                            ->update();
+
+        if ($updateResult) {
+            session()->setFlashdata('success', 'Estado de la consulta actualizado a ' . ucfirst($nuevoEstado) . '.');
+        } else {
+            session()->setFlashdata('error', 'No se pudo actualizar el estado de la consulta.');
+        }
+        // --- FIN DE LA CORRECCIÓN ---
+
+        return redirect()->to(base_url('administracion/consultas'));
+    }
+
+    /**
+     * Elimina una consulta de la base de datos.
+     * @return RedirectResponse
+     */
+    public function eliminarConsulta(): RedirectResponse
+    {
+        $idConsulta = (int) $this->request->getPost('id_consulta');
+
+        if (empty($idConsulta)) {
+            return redirect()->back()->with('error', 'ID de consulta no válido.');
+        }
+
+        if ($this->consultaModel->delete($idConsulta)) {
+            session()->setFlashdata('success', 'Consulta eliminada exitosamente.');
+        } else {
+            session()->setFlashdata('error', 'No se pudo eliminar la consulta.');
+        }
+
+        return redirect()->to(base_url('administracion/consultas'));
     }
 }

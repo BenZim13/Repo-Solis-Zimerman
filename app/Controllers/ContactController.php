@@ -39,7 +39,7 @@ class ContactController extends Controller
                 return redirect()->to('/contact');
             } else {
                 session()->setFlashdata('error', 'Hubo un error al enviar tu consulta. Por favor, inténtalo de nuevo más tarde.');
-                return redirect()->to('/contact')->withInput();
+                return redirect()->to('contact')->withInput();
             }
         } else {
             session()->setFlashdata('errors', $this->validator->getErrors());

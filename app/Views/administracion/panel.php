@@ -33,7 +33,7 @@
 
                     <h4 class="mt-4 mb-3">Estadísticas Rápidas:</h4>
                     <div class="row mb-4">
-                        <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="col-md-4 mb-3 mb-md-0">
                             <div class="card text-white bg-info shadow-sm h-100">
                                 <div class="card-body">
                                     <h5 class="card-title"><i class="bi bi-people-fill me-2"></i>Total Usuarios</h5>
@@ -42,7 +42,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4 mb-3 mb-md-0">
                             <div class="card text-white bg-warning shadow-sm h-100">
                                 <div class="card-body">
                                     <h5 class="card-title"><i class="bi bi-boxes me-2"></i>Total Productos</h5>
@@ -51,6 +51,17 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- INICIO: Nueva tarjeta para Consultas Pendientes -->
+                        <div class="col-md-4">
+                            <div class="card text-white bg-danger shadow-sm h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-question-diamond-fill me-2"></i>Consultas Pendientes</h5>
+                                    <p class="card-text fs-3"><?= esc($totalConsultasPendientes ?? '0') ?></p>
+                                    <a href="<?= base_url('administracion/consultas') ?>" class="text-white stretched-link">Gestionar Consultas <i class="bi bi-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- FIN: Nueva tarjeta para Consultas Pendientes -->
                     </div>
 
                     <h4 class="mt-4">Opciones de Administración:</h4>
@@ -59,7 +70,7 @@
                         <li class="list-group-item"><a href="<?= base_url('administracion/usuarios/nuevo') ?>" class="text-decoration-none"><i class="bi bi-person-plus-fill me-2 text-success"></i>Crear Nuevo Usuario</a></li>
                         <li class="list-group-item"><a href="<?= base_url('productos/listar') ?>" class="text-decoration-none"><i class="bi bi-box-seam me-2 text-primary"></i>Administrar Productos (Listar/Editar/Baja)</a></li>
                         <li class="list-group-item"><a href="<?= base_url('productos/agregar') ?>" class="text-decoration-none"><i class="bi bi-plus-square-fill me-2 text-success"></i>Agregar Nuevo Producto</a></li>
-                        <li class="list-group-item"><a href="<?= base_url('administracion/consultas') ?>" class="text-decoration-none"><i class="bi bi-chat-dots-fill me-2 text-info"></i>Gestionar Consultas</a></li>
+                        <li class="list-group-item"><a href="<?= base_url('administracion/consultas') ?>" class="text-decoration-none"><i class="bi bi-question-circle-fill me-2 text-info"></i>Gestión de Consultas</a></li> <!-- Enlace a Consultas -->
                         <li class="list-group-item"><a href="#" class="text-decoration-none text-muted"><i class="bi bi-journal-text me-2"></i>Ver Órdenes (Funcionalidad Futura)</a></li>
                     </ul>
                 </div>

@@ -55,6 +55,13 @@ $routes->group('administracion', ['filter' => 'admin'], static function(RouteCol
     $routes->post('usuarios/guardarUsuario', 'Administracion::guardarUsuario');
     $routes->get('usuarios/editar/(:num)', 'Administracion::editar/$1');
     $routes->post('usuarios/actualizarUsuario', 'Administracion::actualizarUsuario');
+
+    // INICIO: RUTAS PARA GESTIÓN DE CONSULTAS (ACTUALIZADAS PARA NO USAR AJAX)
+    $routes->get('consultas', 'Administracion::consultas', ['as' => 'gestion_consultas']); // Listar consultas
+    $routes->get('consultas/ver/(:num)', 'Administracion::ver_detalle/$1', ['as' => 'ver_detalle_consulta']); // Detalle de consulta (convencional)
+    $routes->post('consultas/cambiar_estado', 'Administracion::cambiar_estado'); // Cambiar estado
+    $routes->post('consultas/eliminar', 'Administracion::eliminarConsulta'); // Eliminar consulta
+    // FIN: RUTAS PARA GESTIÓN DE CONSULTAS
 });
 
 // Rutas de Administración de Productos (protegidas por filtro 'admin')
@@ -82,10 +89,6 @@ $routes->group('carrito', ['filter' => 'auth'], static function (RouteCollection
     $routes->post('finalizarCompra', 'CarritoController::finalizarCompra');
 });
 
-$routes->post('test-agregar', static function () {
-    return 'Test agregar route reached successfully.';
-});
-
 // Ruta para mostrar la factura (protegida por 'auth')
 $routes->get('factura', 'FacturaController::index', ['filter' => 'auth']);
 
@@ -98,6 +101,11 @@ $routes->get('quienessomos',    'Home::quienessomos');
 $routes->get('comercializacion','Home::comercializacion');
 $routes->get('contacto',        'Home::contacto');
 $routes->get('terminos',        'Home::terminos');
+
+// Rutas del formulario de consulta pública (fuera del panel de admin)
+$routes->get('consultas', 'ConsultaController::index', ['as' => 'formulario_consultas']); // Muestra el formulario
+$routes->post('consultas/guardar', 'ConsultaController::guardar'); // Procesa el envío del formulario
+
 
 // -----------------------------------------------------------------------------
 // Catálogo y productos (públicos) - Estas rutas son más genéricas, van antes del catch-all
@@ -112,18 +120,9 @@ $routes->get('producto/buscar', 'Producto::por_producto');
 $routes->get('producto/(:any)', 'Producto::por_producto/$1');
 
 
-$routes->group('carrito', ['filter' => 'auth'], static function (RouteCollection $routes) {
-    $routes->get('/',            'CarritoController::index');
-    $routes->post('agregar',     'CarritoController::agregar');
-    $routes->post('actualizar',  'CarritoController::actualizar');
-    $routes->post('eliminar',    'CarritoController::eliminar');
-    $routes->post('vaciar',      'CarritoController::vaciar');
-    $routes->post('finalizarCompra', 'CarritoController::finalizarCompra');
-});
-
 // -----------------------------------------------------------------------------
 // Catch-all para rutas no definidas (DEBE IR SIEMPRE AL FINAL)
 // -----------------------------------------------------------------------------
 $routes->get('/(:any)', 'Home::error404'); // Asegúrate de que tu controlador 'Home' tenga el método 'error404'.
 
-$routes->setAutoRoute(true); // Habilitado temporalmente para pruebas
+$routes->setAutoRoute(false); // Asegúrate de que esto esté en false
